@@ -56,6 +56,12 @@ public:
   uint8_t getSerializer(void) { return _i2sserializer; };
   bool read(uint32_t *buffer, int bufsiz);
 
+  uint32_t getOverruns() {
+	  uint32_t r = overrun;
+	  overrun = 0;
+	  return r;
+  }
+
 private:
   int _clk, _data;
   uint32_t _clk_pin, _clk_mux, _data_pin, _data_mux;
@@ -64,6 +70,8 @@ private:
   uint8_t _gclk;
 
   I2s *_hw;
+
+  uint32_t overrun = 0;
 };
 
 

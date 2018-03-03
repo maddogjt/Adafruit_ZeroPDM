@@ -32,6 +32,7 @@
 #else
   #define DEBUG_PRINT(...)
   #define DEBUG_PRINTLN(...)
+
 #endif
 
 
@@ -307,7 +308,7 @@ bool Adafruit_ZeroPDM::configure(uint32_t sampleRateHz, boolean stereo) {
       I2S_SERCTRL_SLOTADJ     |  // Data is left in slot
       // I2S_SERCTRL_TXSAME   |  // Pad 0 on underrun
       0;
-    
+
     // Configure clock unit to use with serializer, and set serializer as an output.
     if (_i2sclock < 2) {
       serctrl |= (_i2sclock ? I2S_SERCTRL_CLKSEL : 0);
@@ -373,6 +374,11 @@ uint32_t Adafruit_ZeroPDM::read(void) {
     /* Read data */
     data = _hw->DATA[_i2sserializer].reg;
     _hw->INTFLAG.reg = ready_bit;
+
+    if (_hw->INTFLAG.reg & (I2S_INTFLAG_RXOR0 << _i2sserializer)) {
+      _hw->INTFLAG.reg = (I2S_INTFLAG_RXOR0 << _i2sserializer);
+      overrun++;
+    }
     return data;
   }
 }
